@@ -1,0 +1,404 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{titling}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tabularx,ragged2e}
+\hypersetup{colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    unicode=false}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 4 - 2AA4}
+\author{Mohamed Bengezi bengezim}
+
+\begin {document}
+
+\maketitle
+The contents of this report include the specifications of the game state for a game a Battleship.
+
+\newpage
+
+\section* {Battleship Module}
+
+\subsection* {Module}
+
+Battleship
+
+\subsection* {Uses}
+
+PointT, ShipT, GameStateT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{4cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+init & sequence[5] of ShipT&  & \\
+  & sequence[5] of ShipT &  & \\
+\hline
+all\_shots & & sequence of PointT & \\
+\hline
+place\_shot & PointT & boolean & InvalidShotException\\
+\hline
+is\_winner &  & boolean & \\
+\hline
+
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+\noindent $shots\_taken$: sequence of PointT\\
+$\mathit{firstPlayerTurn}$: boolean \\
+$first\_player$: GameStateT for the first player \\
+$second\_player$: GameStateT for the second player \\
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+The init method is called for the abstract object before any other access routine is called for that
+object.  The init method can be used to return the state of the game to the state of a new game.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent init($\mathit{firstPlayerShipList}, \mathit{secondPlayerShipList}$):
+\begin{itemize}
+\item transition: 
+$\mathit{shots\_taken}, \mathit{firstPlayerTurn}, \mathit{first\_player}, \mathit{second\_player} := <>,  true,\\
+ \mbox{new GameStateT(firstPlayerShipList)}, \mbox{new GameStateT(secondPlayerShipList)} $
+\item exception: None
+\end{itemize}
+
+
+\noindent all\_shots():
+\begin{itemize}
+\item output: $out := shots\_taken$
+\item exception: None
+\end{itemize}
+
+\noindent place\_shot($p$):
+\begin{itemize}
+\item transition-output: $firstPlayerTurn, out := \lnot firstPlayerTurn$ and $shots\_taken$ such that $shots\_taken = pre(shots\_taken)[0..|pre(shots\_taken)|-1]||\mathit{<}p\mathit{>}, (firstPlayerTurn \Rightarrow second\_player.has\_been\_shot(p) | \lnot firstPlayerTurn \Rightarrow first\_player.has\_been\_shot(p))$
+\item exception: $exc := (firstPlayerTurn \Rightarrow \exists( i : \mathbb{I} | (i \% 2 = 0) \land (0 \leq i < |shots\_taken|) : repeatedShot(p, shots\_taken[i]))| \lnot firstPlayerTurn \Rightarrow \exists( i : \mathbb{I} | (i \% 2 = 1) \land (1 \leq i < |shots\_taken|) : repeatedShot(p, shots\_taken[i]))) \Rightarrow$ InvalidShotException
+\end{itemize}
+
+\noindent is\_winner():
+\begin{itemize}
+\item output: $out := (firstPlayerTurn \Rightarrow second\_player.\mbox{all\_ships\_lost()}| \lnot firstPlayerTurn \Rightarrow first\_player.all\_ships\_lost())$
+\item exception: None
+\end{itemize}
+
+\subsubsection* {Local Functions}
+\textbf{repeatedShot} : PointT $\times$ PointT $\rightarrow$ boolean\\
+~\newline
+repeatedShot($p,q$) $\equiv (p.xcrd() = q.xcrd()) \land (p.ycrd() = q.ycrd())$
+
+~\newline
+
+\section* {Game State Module}
+
+\subsection* {Template Module}
+
+GameStateT
+
+\subsection* {Uses}
+
+ShipT, PointT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+GameStateT = ?
+
+\subsubsection* {Exported Constants }
+\noindent MAX\_ROWS =  10 
+\newline
+MAX\_COLUMNS = 10
+
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{6cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+GameStateT & sequence of ShipT  & GameStateT & InvalidConfigurationException\\
+\hline
+has\_been\_shot & PointT & boolean & \\
+\hline
+all\_ships\_lost &  & boolean & \\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+\noindent $\mathit{hitList}$: sequence <> of integer {\it //integer array representing the list of shots hit}\\
+$\mathit{shipList}$: sequence <> of ShipT {\it //ShipT array representing the shipList}\\
+$\mathit{hitIndex}$: Integer 
+
+\subsubsection* {State Invariant}
+
+None
+
+\subsubsection* {Assumptions}
+
+The GameStateT() constructor is called for each abstract object before any other access routine is called for that
+object.  The constructor can only be called once.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent GameStateT($shipList$):
+\begin{itemize}
+\item transition: $\mathit{shipList}, \mathit{hitList}:= shipList, <>$
+\item output: $out := \mathit{self}$
+\item exception: 
+\begin{eqnarray*}
+\lefteqn{exc :=
+ (\lnot (|shipList| = 5) \lor \lnot (shipList[0].get\_length() = 2)  \lor \lnot (shipList[1].get\_length() = 3) \lor} \\
+& & \lnot (shipList[2].get\_length() = 3)  \lor \lnot (shipList[3].get\_length() = 4)  \lor \\
+& &  \lnot (shipList[4].get\_length() = 5)  \lor\\
+& &  (\exists( i : \mathbb{I} | 0 \leq i < |shipList| : \exists( j : \mathbb{I} | (0 \leq j < |shipList|) \land (i \neq j) :\\
+& &  \mbox{conflict}(shipList[i], shipList[j]))))) \Rightarrow \mathrm{InvalidConfigurationException}
+\end{eqnarray*}
+\end{itemize}
+
+\noindent has\_been\_shot($p$):
+\begin{itemize}
+\item transition-output: $hitList, out := (checkShot(shipList, p) \Rightarrow hitList[0..hitIndex-1] || < pre(hitList)[hitIndex] + 1>|| hitList[hitIndex + 1 .. |hitList| -1 ] where \\
+ pointInLine(p, shipList[i].get\_head(), shipList[i].get\_tail()) = true |  \lnot checkShot(shipList, p) \Rightarrow hitList)checkShot(shipList, p)$
+\item exception: None
+\end{itemize}
+
+\noindent all\_ships\_lost():
+\begin{itemize}
+\item output: $out := \forall( i : \mathbb{I} | 0 \leq i < |shipList| : shipList[i].\mbox{get\_length}() = hitList[i])$
+\item exception: None
+\end{itemize}
+
+
+\subsubsection* {Local Functions}
+
+\textbf{pointInLine} : PointT $\times$ PointT $\times$ PointT $\rightarrow$ boolean\\
+~\newline
+pointInLine$(p, head, tail) \equiv (head.dist(p) + tail.dist(p) = head.dist(tail))$
+
+~\newline
+
+\noindent \textbf{conflict} : ShipT $\times$ ShipT $\rightarrow$ boolean\\
+~\newline
+
+conflict$(first, second) \equiv \exists( i :PointT | pointInLine(i, first.get\_head(), firstget\_tail()) :pointInLine(i, second.get\_head(), second.get\_tail()) \rightarrow hitIndex = index_of_i )$
+
+~\newline
+
+\noindent \textbf{checkShot} : sequence of ShipT $\times$ PointT $\rightarrow$ boolean\\
+~\newline
+checkShot$(shipList, p) \equiv \exists( s : ShipT | s \in shipList : pointInLine(p, s.get\_head(), s.get\_tail()))$
+
+~\newline
+
+\section* {Ship Module}
+
+\subsection* {Template Module}
+
+ShipT
+
+\subsection* {Uses}
+
+PointT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+ShipT = ?
+
+\subsubsection* {Exported Constants }
+
+MAX\_SIZE =  5 {\it //Maximum size of a ship}\\
+\newline
+MIN\_SIZE = 2 {\it //Minimum size of a ship}\\
+
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+ShipT & integer, PointT, PointT & ShipT & InvalidShipException \\
+\hline
+get\_length &   &  integer  & \\
+\hline 
+get\_head & & PointT &  \\
+\hline
+get\_tail &  &  PointT & \\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$\mathit{head}$: PointT {\it //Start point of the boat}\\
+$\mathit{tail}$: PointT {\it //End point of the boat}\\
+$\mathit{length}$: integer {\it //Length of the boat}
+
+\subsubsection* {State Invariant}
+
+
+\subsubsection* {Assumptions}
+The ShipT constructor is called for each abstract object before any other access routine is called for that
+object.  The constructor can only be called once.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent ShipT($l, a, b$):
+\begin{itemize}
+\item transition: $\mathit{length}, \mathit{head}, \mathit{tail} := l, a, b$
+\item output: $out := \mathit{self}$
+\item exception: $exc := (\lnot (MIN\_SIZE \leq length \leq \mbox{MAX\_SIZE}) \vee ((head.xcrd() \neq tail.xrd()) \land (head.ycrd() \neq tail.ycrd())) \Rightarrow
+\mbox{InvalidShipException})$
+\end{itemize}
+
+\noindent get\_length():
+\begin{itemize}
+\item output: $out := length$
+\item exception: none
+\end{itemize}
+
+\noindent get\_head():
+\begin{itemize}
+\item output: $out := head$
+\item exception: none
+\end{itemize}
+
+\noindent get\_tail():
+\begin{itemize}
+\item output: $out := tail$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+
+\section* {Point ADT Module}
+
+\subsection*{Template Module}
+
+PointT
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+PointT = ?
+
+\subsubsection* {Exported Constants}
+
+MAX\_X = 10
+MAX\_Y = 10
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+PointT & real, real & PointT & InvalidPointException\\
+\hline
+xcrd & ~ & real & ~\\
+\hline
+ycrd & ~ & real & ~\\
+\hline
+dist & PointT & real & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$xc$: real\\
+$yc$: real
+
+\subsubsection* {State Invariant}
+
+none
+
+\subsubsection* {Assumptions}
+The constructor PointT is called for each abstract object before any other access routine is called for that
+object.  The constructor cannot be called on an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+PointT($x, y$):
+\begin{itemize}
+\item transition: $xc, yc := x, y$
+\item output: $out := \mathit{self}$
+\item exception
+ $exc := ((\neg(0 \leq x \leq \mbox{MAX\_X}) \vee \neg(0 \leq y \leq \mbox{MAX\_Y})) \Rightarrow
+\mbox{InvalidPointException})$
+\end{itemize}
+
+\noindent xcrd():
+\begin{itemize}
+\item output: $out := xc$
+\item exception: none
+\end{itemize}
+
+\noindent ycrd():
+\begin{itemize}
+\item output: $out := yc$
+\item exception: none
+\end{itemize}
+
+\noindent dist($p$):
+\begin{itemize}
+\item output: $out := \sqrt{(\mathit{self}.xc - p.xc)^2 + (\mathit{self}.yc - p.yc)^2}$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+
+\end {document}

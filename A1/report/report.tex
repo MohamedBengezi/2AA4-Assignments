@@ -1,0 +1,170 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    unicode=false}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 1 Solution}
+\author{Mohamed Bengezi bengezim}
+
+\begin {document}
+
+\maketitle
+
+The purpose of this software design exercise is to write a Python program that
+creates, uses, and tests an ADT that stores circles.  The program consist of the
+following files: {\tt CircleADT.py}, {\tt Statistics.py}, {\tt testCircles.py}
+and {\tt Makefile}, as shown in Appendix
+
+
+
+\section*{Testing of the Original Program}
+
+The results of testing my files, specifically CircleADT.py and Statistics.py were all successful.
+ Most of the simple functions had simple test cases, but more complicated ones, such as intersect(), or rank()
+ had specialized ones. The following were specific test cases that were notable:
+\begin{itemize}
+\item In intersect(), I had the test case of two circles with the same centre, but different radii.
+This test case was expected to return True, seeing as they are fully intersecting. It
+successfully did so.
+\item Another intersect() test case that is notable is where the edges of the circles are just touching. 
+With my assumptions, I expected the result to be false, seeing as they have not actually intersected one
+another. The actual result matched the expected
+\item In rank, I made the assumption that if there were two circles in the list with the same radius, the 
+first one would be have a higher rank than the second one
+
+\end{itemize}
+
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.8\textwidth]{C:/Users/Mohamed/Desktop/img1.PNG}
+\caption{Results of testing My files}
+\label{Figure : example}
+\end{figure}
+
+
+\newpage
+
+\section*{Testing of the Partner Files}
+As seen in the next figure, my partner's files only failed the two test cases mentioned above.
+The main reason for this is that they have made different assumptions than me:
+\begin{itemize}
+\item One assumption is that when the circles are just touching, they are intersecting. This
+is a reasonable assumption.
+\item Another is that when the circles are fully overlapped, they are not intersecting. I believe
+this is not a reasonable assumption, seeing as mathematically they are intersecting in this case.
+\end{itemize}
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.8\textwidth]{C:/Users/Mohamed/Desktop/img4.jpg}
+\caption{Results of testing Partner files}
+\label{Figure : example}
+\end{figure}
+
+\newpage
+\section*{Discussion}
+\subsection{Issues with my code}
+As discussed earlier, the only controversial test cases were from intersect() and rank(). In summary, all my functions 
+behaved expectedly. At first, I had tested my insideBox() method and found that it wasn't behaving expectedly. This 
+was due to a wrong implementation of the if statement conditions. Once that was corrected, the functions all proceeded
+as expected
+
+
+\subsection{Issues with partners code}
+When it came to testing my partner's files, all functions behaved expectedly, except for inersect(). This was due to 
+different assumptions made by me and my partner. This shows me that when working on projects with others, or even
+solely, you should take into consideration the assumptions that others might make, and how it could affect the correctness
+of your code.
+
+
+\subsection{Module Implementation and Specification}
+As for specification of the module's, the specification and implementation of the function were all very similar, with the exception 
+of intersect(). This would explain why their intersect method failed my test cases. I directly used the distance between points  formula and compared it with the radii, while they more so used thier own logic.
+
+
+\subsection{Handling  $\pi$}
+I handled the value of  $\pi$ by using the math library in python. The reasoning for this is that seeing as it is a default python
+library, the constant is widely used, and accurate enough for this situation (11 decimal places). Seeing as it is not literally defined in any of my functions, 
+it is defined explicitly, in the math library. The scope of  $\pi$ is then global, because it is used everywhere. 
+\newpage
+
+\lstset{language=Python, basicstyle=\tiny,breaklines=true,showspaces=false,showstringspaces=false,breakatwhitespace=true}
+
+\def\thesection{\Alph{section}} 
+
+\section{Code for CircleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A1/src/CircleADT.py}
+
+\newpage
+
+
+
+\section{Code for Statistics.py}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A1/src/Statistics.py}
+
+
+\newpage
+
+\section{Code for testCircles.py} \label{testSect}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A1/src/testCircles.py}
+
+
+\newpage
+
+\section{Partner's CircleADT.py} \label{PartSec}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/Desktop/CircleADT.py}
+
+
+\newpage
+
+\section{Partner's Statistics.py} \label{PartSec1}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/Desktop/Statistics.py}
+    
+\newpage
+
+
+\section{Makefile} \label{MakefileSect}
+%\lstset{language=make}
+%\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A1/Makefile}
+Figure is on next page....
+
+\begin{figure}[b]
+
+
+\centering
+
+\includegraphics[width = \textwidth]{C:/Users/Mohamed/Desktop/img.PNG}
+
+\caption{Makefile}
+
+\label{Figure : example}
+
+\end{figure}
+
+
+
+\end {document}

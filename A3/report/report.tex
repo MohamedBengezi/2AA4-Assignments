@@ -1,0 +1,282 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{indentfirst}
+\hypersetup{colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    unicode=false}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 3 - 2AA4}
+\author{Mohamed Bengezi bengezim}
+
+\begin {document}
+
+\maketitle
+The contents of this report include the specifications of RegionT and PathCalculation modules, as
+well as a critique of the interface for the modules for Part 1 of Assignment 3.
+
+
+
+\section* {Region Module}
+
+\subsection* {Template Module}
+
+RegionT
+
+\subsection* {Uses}
+
+PointT, Constants
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+RegionT = ?
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+RegionT & PointT, real, real & RegionT & InvalidRegionException\\
+\hline
+pointInRegion & PointT & boolean & ~\\
+\hline 
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$\mathit{lower\_left}$: PointT {\it //coordinates of the lower left corner of the region}\\
+$\mathit{width}$: real {\it //width of the rectangular region}\\
+$\mathit{height}$: real {\it //height of the rectangular region}
+
+\subsubsection* {State Invariant}
+None
+
+\subsubsection* {Assumptions}
+The RegionT constructor is called for each abstract object before any other access routine is called for that
+object.  The constructor can only be called once.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent RegionT($p, w, h$):
+\begin{itemize}
+\item transition: $\mathit{lower\_left}, \mathit{width}, \mathit{height} := p, w, h$
+\item output: $out := \mathit{self}$
+\item exception: $exc := (\lnot (0 \leq p.xcrd() \leq \mbox{Contants.MAX\_X} - w) \vee (0 \leq p.ycrd() \leq \mbox{Constants.MAX\_Y} - h)) \Rightarrow
+\mbox{InvalidRegionException})$
+\end{itemize}
+
+\noindent pointInRegion($p$):
+\begin{itemize}
+\item output: $\mathit{out} :=  \exists (p, q : PointT| q.ycrd() \in [lower\_left.ycrd() .. height] \land q.xcrd() \in [lower\_left.xcrd() .. width] : p.dist(q) < TOLERANCE) $
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section* {Path Calculation Module}
+
+\subsection* {Module}
+
+PathCalculation
+
+\subsection* {Uses}
+
+Constants, PointT, RegionT, PathT, Obstacles, Destinations, SafeZone, Map
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+is\_validSegment & PointT, PointT & boolean & ~\\
+\hline
+is\_validPath & PathT & boolean & ~\\
+\hline
+is\_shortestPath & PathT & boolean & ~\\
+\hline
+totalDistance & PathT & real & ~\\
+\hline
+totalTurns & PathT & integer & ~\\
+\hline
+estimatedTime & PathT & real & ~\\
+\hline
+%sortPathList & PathListT & PathListT & ~\\
+%\hline
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Invariant}
+None
+
+\subsubsection* {Assumptions}
+The RegionT constructor is called for each abstract object before any other access routine is called for that
+object.  The constructor can only be called once.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent is\_validSegment($p_1, p_2$):
+\begin{itemize}
+\item output: $\mathit{out} := \forall( p, q : PointT | (q.dist(p_1) + q.dist(p_2) = p_1.dist(p_2)) \land (p.dist(q) \leq \mbox{Constants.TOLERANCE}) : \forall (i : \mathbb{N} | i \in [0..|Obs|-1] : \lnot ((Obstacles.getval(i)).pointInRegion(p))))$
+\item exception: None
+\end{itemize}
+
+\noindent is\_validPath($p$):
+\begin{itemize}
+\item output: $out :=  \exists(q : PointT \land i : \mathbb{N} | (q.dist(p.getval(i)) + q.dist(p.getval(i+1))\\
+ = p.getval(i).dist(Path.getval(i+1))) \forall(i,j,k : \mathbb{N} \land s : SafeZone \land  d : Destinations| i \in [0..s.size()-1]
+\land Maps.get\_safeZone.getval(i).pointInRegion(p.getval(0)) \\
+\land Maps.get\_safeZone.getval(i).pointInRegion(p.getval(p.size()-1))
+\land \\
+j \in  [0..Maps.get\_destinations.size()-1] \land k \in [1..p.size()-1] \land \\
+Maps.get\_destinations.getval(j).pointInRegion(p.getval(0))  \land Maps.get\\ \_destinations.getval(j).pointInRegion(p.getval(k)): p.isvalidSegment(p.getval(k-1), p.getval(k))))$
+\item exception: None
+\end{itemize}
+
+
+\noindent is\_shortestPath($p$):
+\begin{itemize}
+\item output: $\mathit{out} :=  \forall (x : PathT | PathCalculation.is\_validPath(x) : PathCalculation.totalDistance(p) \\
+\leq  PathCalculation.totalDistance(x)) $
+\item exception: none
+\end{itemize}
+
+\noindent totalDistance($p$):
+\begin{itemize}
+\item output: $out := + ( i: \mathbb{N}  |  i \in [0 ..  p.size()-1] \land  i < p.size() - 2 :  p.getval(i).dist(p.getval(i+1)) )$
+\item exception: None
+\end{itemize}
+
+
+\noindent totalTurns($p$):
+\begin{itemize}
+\item output: $\mathit{out} := + ( i: \mathbb{N}  |  i \in [0 ..  |p|-3] \land (p_.getVal([i+1])_.dist(p_.getVal([i])) + p_.getVal([i+2])_.dist(p_.getVal([i+1]))) \neq p_.getVal([i+2])_.dist(p_.getVal([i])) : 1 )$
+\item exception: none
+\end{itemize}
+
+\noindent estimatedTime($p$):
+\begin{itemize}
+\item output: $\mathit{out} := (Constants.VECLOCITY\_LINEAR \times totalDistance(p)) + ( + ( i: \mathbb{N} | i \in [0 .. |p|-3] : Constants.VELOCITY\_ANGULAR \times pathAngle(p_.getVal(i), p_.getVal(i+1), p_.getVal(i+2))))$
+\item exception: none
+\end{itemize}
+    
+\subsubsection*{Local Functions}
+angle: PointT $\times$ PointT  $\times$ PointT  $\rightarrow$  real
+\noindent pathAngle($p, q, r$):
+\begin{itemize}
+\item output: $\mathit{out} := \arccos (((r_.ycrd() - q_.ycrd()) \times (q_ycrd() - p_.ycrd()) + ((r_.xcrd() - q_.xcrd()) \times (q_.xcrd() - p_.xcrd())) / (r_.dist(q) \times q_.dist(p)))$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section* {Point ADT Module}
+
+\subsection*{Template Module}
+
+PointT
+
+\subsection* {Uses}
+
+
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+PointT = ?
+
+\subsubsection* {Exported Constants}
+
+MAX\_X = 10
+MAX\_Y = 10
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+PointT & real, real & PointT & InvalidPointException\\
+\hline
+xcrd & ~ & real & ~\\
+\hline
+ycrd & ~ & real & ~\\
+\hline
+dist & PointT & real & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+$xc$: real\\
+$yc$: real
+
+\subsubsection* {State Invariant}
+
+none
+
+\subsubsection* {Assumptions}
+The constructor PointT is called for each abstract object before any other access routine is called for that
+object.  The constructor cannot be called on an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+PointT($x, y$):
+\begin{itemize}
+\item transition: $xc, yc := x, y$
+\item output: $out := \mathit{self}$
+\item exception
+ $exc := ((\neg(0 \leq x \leq \mbox{MAX\_X}) \vee \neg(0 \leq y \leq \mbox{MAX\_Y})) \Rightarrow
+\mbox{InvalidPointException})$
+\end{itemize}
+
+\noindent xcrd():
+\begin{itemize}
+\item output: $out := xc$
+\item exception: none
+\end{itemize}
+
+\noindent ycrd():
+\begin{itemize}
+\item output: $out := yc$
+\item exception: none
+\end{itemize}
+
+\noindent dist($p$):
+\begin{itemize}
+\item output: $out := \sqrt{(\mathit{self}.xc - p.xc)^2 + (\mathit{self}.yc - p.yc)^2}$
+\item exception: none
+\end{itemize}
+
+\newpage
+ 
+\end {document}

@@ -1,0 +1,205 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    filecolor=blue,
+    urlcolor=blue,
+    unicode=false}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 160mm
+\textheight 200mm
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 2 Solution}
+\author{Mohamed Bengezi bengezim}
+
+\begin {document}
+
+\maketitle
+
+The purpose of this software design exercise is to write a Python program that
+creates, uses, and tests an ADT that stores circles.  The program consist of the
+following files: {\tt pointADT.py}, {\tt lineADT.py}, {\tt circleADT.py}, {\tt deque.py}, {\tt testCircle.py}
+and {\tt Makefile}, as shown in Appendix
+
+
+
+\section*{Testing of the Original Program}
+
+The results of testing my files, were all successful. Most of the simple functions had simple test cases,
+ but more complicated ones, such as rot(), had specialized ones. 
+The following were specific test cases that were notable:
+\begin{itemize}
+\item In rot() for PointT, I had four test cases. One was for a negative theta, such as - $\pi$/2, 
+one was for a positive theta, such as $\pi$/2, one was for a theta of 0, and lastly one was for a theta 
+above pi, such as 2$\pi$. The rot function proved successful in all four test cases 
+\item For the functions that returned point objects, such as beg, I tested the xcoord and ycoord of the
+resulting point to make sure it matched the expected output. 
+\item I felt no need to test the LineT rot() function more than once, seeing as it relies solely on the PointT rot(),
+ which I tested heavily already.
+\item My assumption for the intersect() method was that p is a point that is the result of the averages of the
+x's and y's of the centre's of both circles. It would then see if p was in both circles. This assumption was
+incorrect. This was realized after submission
+
+\end{itemize}
+
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.8\textwidth]{C:/Users/Mohamed/Desktop/img1.PNG}
+\caption{Results of testing My files}
+\label{Figure : example}
+\end{figure}
+
+
+\newpage
+
+\section*{Testing of the Partner Files}
+As seen in the next figure, my partner's files fully passed the tests. Although they did not create an 
+insideCircle method for CircleADT, so without it the test for insideCircle threw an AttributeError. I had to put 
+mine in there temporarily. The main reason for this is that they have made different assumptions than me
+
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.8\textwidth]{C:/Users/Mohamed/Desktop/img4.PNG}
+\caption{Results of testing Partner files w/o my insideCircle}
+\label{Figure : example}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width = 0.8\textwidth]{C:/Users/Mohamed/Desktop/img5.PNG}
+\caption{Results of testing Partner files w/ my insideCircle}
+\label{Figure : example}
+\end{figure}
+
+\newpage
+\section*{Discussion}
+\subsection{Summary}
+In general, all test results were successful, although those for intersect were misleading, as will be discussed next. In general, this assignment taught me the knowledge needed to successfully read an MIS, as well as implement discrete methematics and convert this logic into code. It also taught me to use PyUnit for testing, which makes the testing process much more efficient and manageable. I strongly believe this assignment was layed out and implemented much better than the previous one. it was much more structured, and therefore allowed me to implement with ease.
+\subsection{Issues with my code}
+As discussed earlier, my intersect() method was implemented incorrectly. The reason for this is that my assumptions were
+incorrect. Although my test cases did not make it fail, I realized it after submission, while I was playing around with the code.
+I made this assumption because the assignment MIS specified that a point p must reside in both circles for them to intersect, 
+although I was not sure how to find p, and this seemed like a logical method.
+Other than intersect, I believe there are no other issues in the code
+ 
+
+\subsection{Issues with partners code}
+As far as testing goes, all my tests passed for my partners circleADT.py. This leads me to believe that there are no issues 
+with respect to my and my partners code being implemented together
+
+
+\subsection{Module Specification}
+The specification for this assignment was far more helpful and specific than Assignment 1. It detailed exactly how each function
+should be implemented, and which math formulas to use. This allowed for a more independent design when it came to testing other students files. All files should be implemented the same way, so testing someone else's files should still pass. Assignment 1
+was very general, and therefore lead to more failures due to people implementing functions incorrectly.
+Using PyUnit for testing is extremely convienient, as it provides formatting that one would have to create manually otherwise,
+as well as has many options for testing. I find this much more efficient than the testing for Assignment 1, seeing as it was all done
+manually, and all the formatting was done in the print statements, which is highly unprofessional.
+
+
+\subsection{Specification for totalArea() and averageRadius()}
+\noindent Deq\_totalArea():
+\begin{itemize}
+\item output $$out := +(i: \mathbb{N} | i \in [0 .. |s|-1]:s[i].\mbox{area}())$$
+\end{itemize}
+
+\noindent Deq\_averageRadius():
+\begin{itemize}
+\item output $$out := \frac{+(i: \mathbb{N} | i \in [0 .. |s|-1]:s[i].\mbox{rad}())}{|s|}$$
+\end{itemize}
+
+\subsection{Circle Module Interface Critique}
+\begin{itemize}
+\item Consistent: For the most part, the module was consistent. Although, the naming conventions differed from time to time.
+At the beginning, the names were shortened, such as cen(), but towards the end they were long, such as intersect() or connection(). As for the ordering of parameters, they were uniformly listed throughout. Lastly, the exception handling was all consistent
+\item Essential: The module was most definitely essential. There was no more than one way to access each function, and no unnecessary featuress were added.
+\item General: The module was fairly general. Although it depends on the user implementing pointADT and lineADT, which reduces its generality and makes it less useful for others. If someone wanted to implement circleADT solely, they would not be able to do so.
+\item Minimal: Minimality was clearly present in the circle module. No access routine had two separate functions or services to complete.
+\item Opaque: Lastly, the module was moderately opaque. Each service was contained in a separate function, hiding it and allowing users to change the function without changing the entire module. Although it was a fairly simple module, so there was not much room or need for information hiding
+\end{itemize}
+
+
+
+\subsection{disjoint() w/ One Circle}
+For a deque with one circle, it will have a size of 1. In the mathematical specification, the predicate to the intersect method will
+never pass. This is because the i and j go from 0 to 1-1 (0), which satisfy the first two conditions of the predicate, but the last condition is that i $\neq$ j, which fails. So the intersect expression never occurs. 
+In my code, the same thing would happen, but because it fails the if i $\neq$ j statement, the function would return True.
+
+\newpage
+
+\lstset{language=Python, basicstyle=\tiny,breaklines=true,showspaces=false,showstringspaces=false,breakatwhitespace=true}
+
+\def\thesection{\Alph{section}} 
+
+\section{Code for pointADT.py} \label{PointTSect}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A2/src/pointADT.py}
+
+\newpage
+
+
+
+\section{Code for lineADT.py}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A2/src/lineADT.py}
+
+
+\newpage
+
+\section{Code for circleADT.py} \label{CircleSect}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A2/src/circleADT.py}
+
+
+\newpage
+
+\section{Code for deque.py}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A2/src/deque.py}
+
+
+\newpage
+
+\section{Partner's circleADT.py} \label{PartSec}
+
+\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A2/src/srcPartner/circleADT.py}
+
+
+
+
+\section{Makefile} \label{MakefileSect}
+%\lstset{language=make}
+%\noindent \lstinputlisting{C:/Users/Mohamed/bengezim/A1/Makefile}
+Figure is on next page....
+
+\begin{figure}[b]
+
+
+\centering
+
+\includegraphics[width = \textwidth]{C:/Users/Mohamed/Desktop/img.PNG}
+
+\caption{Makefile}
+
+\label{Figure : example}
+
+\end{figure}
+
+
+
+\end {document}
